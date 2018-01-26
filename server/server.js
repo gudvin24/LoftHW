@@ -2,8 +2,19 @@ const path = require('path');
 const express = require('express');
 const app = express();
 const router = express.Router();
-
 const bodyParser = require('body-parser');
+
+const low = require('lowdb')
+const FileSync = require('lowdb/adapters/FileSync')
+const adapter = new FileSync('db.json')
+const db = low(adapter)
+
+
+db.defaults({ users: [{ login: 'admin', password: 'admin' }],
+              contact_requests: [], works: []})
+.write()
+
+app.disable('x-powered-by');
 
 app.set('views', path.join(__dirname, 'views/pages'));
 app.set('view engine', 'pug');
@@ -12,8 +23,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, './public')));
-
-console.log('ROUTER: ' + require('./routes/index'));
 app.use(require('./routes/index'));
 
 app.use((req, res, next) => {

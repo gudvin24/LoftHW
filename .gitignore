@@ -1,4 +1,4 @@
-app/bower
 node_modules
 dist
 .vscode
+db.json

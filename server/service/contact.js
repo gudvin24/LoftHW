@@ -1,3 +1,8 @@
+const low = require('lowdb')
+const FileSync = require('lowdb/adapters/FileSync')
+const adapter = new FileSync('db.json')
+const db = low(adapter)
+
 module.exports = (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
@@ -9,6 +14,10 @@ module.exports = (req, res, next) => {
     res.json({ mes: "Неправильный Email", status: "Error" });
     return;
   } else {
+    db.get('contact_requests')
+    .push({ name: name, email: email, message: message })
+    .write();
+    
     res.json({ mes: "Сообщение отправлено!", status: "OK" });
   }
 };
