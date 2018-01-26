@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const multiparty = require('multiparty');
-const os = require('os');
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('db.json')
