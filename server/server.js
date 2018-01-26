@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const router = express.Router();
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
@@ -13,6 +14,12 @@ const db = low(adapter)
 db.defaults({ users: [{ login: 'admin', password: 'admin' }],
               contact_requests: [], works: []})
 .write()
+
+fs.mkdir('./server/files', (err) => {
+  if(err && err.code !== 'EEXIST') {
+    throw err;
+  }
+});
 
 app.disable('x-powered-by');
 
