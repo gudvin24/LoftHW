@@ -1,21 +1,28 @@
-const express = require('express');
-const router = express.Router();
+const router = require('koa-router')();
+const koaBody = require('koa-body');
 
-router.get('/', (req, res, next) => {
-    res.status(200).render('index', { });
-});
-router.get('/contact-me', (req, res, next) => {
-    res.status(200).render('contact-me', { });
-});
-router.get('/my-work', (req, res, next) => {
-    res.status(200).render('my-work', { });
-});
-router.get('/login', (req, res, next) => {
-    res.status(200).render('login', { });
+router.get('/', async (ctx, next) => {
+    ctx.render('index');
 });
 
-router.post('/contact-me', require('../service/contact'));
-router.post('/login', require('../service/login'));
-router.post('/my-work', require('../service/work'));
+router.get('/login', async (ctx, next) => {
+    ctx.render('login');
+});
+router.post('/login', koaBody(), require('../service/login'));
+
+router.get('/my-work', async (ctx, next) => {
+    ctx.render('my-work');
+});
+router.post('/my-work', koaBody({
+    multipart: true,
+    formidable: {
+      uploadDir: './server/files'
+    }
+  }), require('../service/work'));
+
+router.get('/contact-me', async (ctx, next) => {
+    ctx.render('contact-me');
+});
+router.post('/contact-me', koaBody(), require('../service/contact'));
 
 module.exports = router;
