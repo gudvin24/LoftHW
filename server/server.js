@@ -3,22 +3,9 @@ const koa = require('koa');
 const app = new koa();
 const Pug = require('koa-pug');
 const static = require('koa-static');
-const fs = require('fs');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('db.json');
-const db = low(adapter);
+const setup = require('./config/default_setup');
 
-
-db.defaults({ users: [{ login: 'admin', password: 'admin' }],
-              contact_requests: [], works: []})
-.write()
-
-fs.mkdir('./server/files', (err) => {
-  if(err && err.code !== 'EEXIST') {
-    throw err;
-  }
-});
+setup();
 
 const pug = new Pug({
   viewPath: path.join(process.cwd(), 'server/views/pages'),
