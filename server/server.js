@@ -1,13 +1,14 @@
 const path = require('path');
-const koa = require('koa');
-const app = new koa();
-const Pug = require('koa-pug');
-const static = require('koa-static');
+const express = require('express');
+const app = express();
+const router = express.Router();
+const bodyParser = require('body-parser');
 const fs = require('fs');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('db.json');
-const db = low(adapter);
+
+const low = require('lowdb')
+const FileSync = require('lowdb/adapters/FileSync')
+const adapter = new FileSync('db.json')
+const db = low(adapter)
 
 
 db.defaults({ users: [{ login: 'admin', password: 'admin' }],
@@ -20,16 +21,24 @@ fs.mkdir('./server/files', (err) => {
   }
 });
 
-const pug = new Pug({
-  viewPath: path.join(process.cwd(), 'server/views/pages'),
-  basedir: path.join(process.cwd(), 'server/public_html')
+app.disable('x-powered-by');
+
+app.set('views', path.join(__dirname, 'views/pages'));
+app.set('view engine', 'pug');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(express.static(path.join(__dirname, './public')));
+app.use(require('./routes/index'));
+
+app.use((req, res, next) => {
+  res.status(404).send('<h1>404</h1>');
 });
 
-pug.use(app); 
-
-app
-  .use(static(path.join(__dirname, './public')))
-  .use(require('./routes/index').routes());
+app.use((req, res, next) => {
+  res.status(500).send('<h1>Internal server error</h1>');
+});
 
 const server = app.listen(3000, () => {
   console.log('Listening to port: ' + server.address().port);
