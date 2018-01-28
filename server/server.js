@@ -3,24 +3,9 @@ const express = require('express');
 const app = express();
 const router = express.Router();
 const bodyParser = require('body-parser');
-const fs = require('fs');
+const setup = require('./config/default_setup');
 
-const low = require('lowdb')
-const FileSync = require('lowdb/adapters/FileSync')
-const adapter = new FileSync('db.json')
-const db = low(adapter)
-
-
-db.defaults({ users: [{ login: 'admin', password: 'admin' }],
-              contact_requests: [], works: []})
-.write()
-
-fs.mkdir('./server/files', (err) => {
-  if(err && err.code !== 'EEXIST') {
-    throw err;
-  }
-});
-
+setup();
 app.disable('x-powered-by');
 
 app.set('views', path.join(__dirname, 'views/pages'));
